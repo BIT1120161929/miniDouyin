@@ -11,9 +11,9 @@ public class Feed {
     @SerializedName("user_name")
     private String userName;
     @SerializedName("image_url")
-    private URL imageUrl;
+    private String imageUrl;
     @SerializedName("video_url")
-    private URL videoURL;
+    private String videoURL;
 
     public String getStudentId() {
         return studentId;
@@ -23,11 +23,11 @@ public class Feed {
         return userName;
     }
 
-    public URL getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public URL getVideoURL() {
+    public String getVideoURL() {
         return videoURL;
     }
 
@@ -39,11 +39,11 @@ public class Feed {
         this.userName = userName;
     }
 
-    public void setImageUrl(URL imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void setVideoURL(URL videoURL) {
+    public void setVideoURL(String videoURL) {
         this.videoURL = videoURL;
     }
 }

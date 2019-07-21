@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +59,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     private int CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_BACK;
     private boolean isRecording = false;
+    private boolean isCameraOn = false;
     private int rotationDegree = 0;
     private SurfaceHolder mSurfaceHolder;
     private File outputMediaFile;
@@ -92,22 +95,22 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
         startPreview(mSurfaceHolder);
     }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            mCamera = getCamera(CAMERA_TYPE);
-
-            startPreview(mSurfaceHolder);
-        }
-        if (!(isVisibleToUser) && mCamera != null) {
-            if(isRecording){
-                releaseMediaRecorder();
-            }
-            releaseCameraAndPreview();
-        }
-    }
+//
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser&&!isCameraOn) {
+//            mCamera = getCamera(CAMERA_TYPE);
+//
+//            startPreview(mSurfaceHolder);
+//        }
+//        if (!(isVisibleToUser) && mCamera != null) {
+//            if(isRecording){
+//                releaseMediaRecorder();
+//            }
+//            releaseCameraAndPreview();
+//        }
+//    }
 
     @Nullable
     @Override
@@ -188,6 +191,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             cam.setParameters(parameters);
         }
+        isCameraOn = true;
         return cam;
     }
 
@@ -195,6 +199,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         mCamera.stopPreview();
         mCamera.release();
         mCamera = null;
+        isCameraOn = false;
     }
 
     private void startPreview(SurfaceHolder holder) {
@@ -216,6 +221,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         android.hardware.Camera.CameraInfo info =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(cameraId, info);
+
         int rotation = getActivity().getWindowManager().getDefaultDisplay()
                 .getRotation();
         int degrees = 0;

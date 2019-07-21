@@ -23,7 +23,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context mContext;
 
     private List<Feed> feedList;
-    private NetworkServiceImpl networkService = new NetworkServiceImpl();
     public RecyclerViewAdapter(Context mContext,List<Feed> feedList) {
         this.mContext = mContext;
         this.feedList = feedList;
@@ -48,7 +47,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
 
         ImageView im_icon;
         TextView tv_name;
@@ -59,6 +58,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             im_icon = itemView.findViewById(R.id.iv_icon);
             tv_name= itemView.findViewById(R.id.tv_name);
             tv_studentId = itemView.findViewById(R.id.tv_studentid);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(onItemClickListener!=null){
+                        onItemClickListener.OnItemClick(v,feedList.get(getPosition()).getVideoURL());
+                    }
+                }
+            });
         }
+    }
+
+    /**
+     * 点击RecyclerView某条的监听
+     */
+    public interface OnItemClickListener{
+        /**
+         * 当RecyclerView某条被点击时回调
+         * @param view 点击item的视图
+         * @param videoUrl 点击得到的数据
+         */
+        public void OnItemClick(View view,String videoUrl);
+    }
+
+    private OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
     }
 }

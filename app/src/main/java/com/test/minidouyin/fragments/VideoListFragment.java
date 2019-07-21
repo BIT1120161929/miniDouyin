@@ -20,6 +20,9 @@ import com.test.minidouyin.network.NetworkServiceImpl;
 import com.test.minidouyin.network.beans.Feed;
 import com.test.minidouyin.network.beans.FeedsResponse;
 import com.test.minidouyin.network.service.VideoListService;
+import com.test.minidouyin.utils.TransportUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -34,7 +37,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class VideoListFragment extends Fragment {
     private RecyclerView videoRecyclerView;
-    private List<Feed> feedList;
 
     public VideoListFragment() {
     }
@@ -61,14 +63,20 @@ public class VideoListFragment extends Fragment {
         call.enqueue(new Callback<FeedsResponse>() {
             @Override
             public void onResponse(Call<FeedsResponse> call, Response<FeedsResponse> response) {
-                System.out.println("xxxxxxxxxxxxxxx");
-                System.out.println(response.body().getFeeds());
-                videoRecyclerView.setAdapter(new RecyclerViewAdapter(getActivity(),response.body().getFeeds()));
+                RecyclerViewAdapter mAdapter = new RecyclerViewAdapter(getActivity(),response.body().getFeeds());
+
+                videoRecyclerView.setAdapter(mAdapter);
+
+                mAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void OnItemClick(View view, String videoUrl) {
+                        EventBus.getDefault().post(new TransportUtils(videoUrl));
+                    }
+                });
             }
 
             @Override
             public void onFailure(Call<FeedsResponse> call, Throwable t) {}
         });
     }
-
 }
