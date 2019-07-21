@@ -12,7 +12,7 @@ public class OnDoubleClickListener implements View.OnTouchListener {
     /**
      * 两次点击时间间隔，单位毫秒
      */
-    private final int interval = 1500;
+    private final int interval = 1000;
     private DoubleClickCallback mCallback;
 
     public interface DoubleClickCallback {

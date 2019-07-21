@@ -1,43 +1,31 @@
 package com.test.minidouyin;
 
-import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.test.minidouyin.fragments.ShootPostFragment;
-import com.test.minidouyin.fragments.ShootVideoFragment;
 import com.test.minidouyin.fragments.VideoListFragment;
 import com.test.minidouyin.fragments.VideoPlayFragment;
-import com.test.minidouyin.network.NetworkServiceImpl;
-import com.test.minidouyin.network.beans.Feed;
-import com.test.minidouyin.network.beans.FeedsResponse;
-import com.test.minidouyin.network.service.VideoListService;
 import com.test.minidouyin.utils.TransportUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.List;
+public class MainActivity extends AppCompatActivity {
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-public class MainActivity extends AppCompatActivity{
-
-    ViewPager pager;
+    ViewPager2 pager;
 
     public static final int PLAY = 1;
+    public static final int COME_BACK = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -46,10 +34,11 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         pager = findViewById(R.id.vp_viewpager);
-        pager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+        pager.setAdapter(new FragmentStateAdapter(getSupportFragmentManager()) {
+            @NonNull
             @Override
-            public Fragment getItem(int i) {
-                switch (i) {
+            public Fragment getItem(int position) {
+                switch (position) {
                     case 0:return new VideoPlayFragment();
                     case 1:return new VideoListFragment();
                     case 2:return new ShootPostFragment();
@@ -58,23 +47,11 @@ public class MainActivity extends AppCompatActivity{
             }
 
             @Override
-            public int getCount() {
+            public int getItemCount() {
                 return 3;
-            }
-
-            @Nullable
-            @Override
-            public CharSequence getPageTitle(int position){
-                switch (position){
-                    case 0:return "播放";
-                    case 1:return "列表";
-                    case 2:return "录制";
-                }
-                return null;
             }
         });
         pager.setCurrentItem(1);
-
     }
 
     @Override
@@ -88,9 +65,16 @@ public class MainActivity extends AppCompatActivity{
      * @param transportUtils
      */
     @Subscribe
-    public void onEventMainThread(TransportUtils transportUtils){
+    public void onEventMainThread2Play(TransportUtils transportUtils){
         if(transportUtils.PALY == PLAY){
             pager.setCurrentItem(0);
+        }
+    }
+
+    @Subscribe
+    public void onEventMainThread2Back(Integer type){
+        if(type == COME_BACK){
+            pager.setCurrentItem(1);
         }
     }
 }

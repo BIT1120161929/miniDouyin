@@ -3,13 +3,9 @@ package com.test.minidouyin.fragments;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +14,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
+import com.test.minidouyin.MainActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.network.RetrofitManager;
 import com.test.minidouyin.network.beans.PostVideoResponse;
 import com.test.minidouyin.network.service.VideoListService;
 import com.test.minidouyin.utils.OnDoubleClickListener;
 import com.test.minidouyin.utils.ResourceUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -50,7 +54,6 @@ public class PostFragment extends Fragment {
     private Uri mSelectedImage;
     private Uri mSelectedVideo;
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class PostFragment extends Fragment {
         videoView = view.findViewById(R.id.vv_video);
         imageView = view.findViewById(R.id.iv_cover);
         btnPost = view.findViewById(R.id.btn_post);
+        btnPost.setBackgroundColor(Color.GRAY);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +81,7 @@ public class PostFragment extends Fragment {
             public void onClick(View v) {
                 if (requestReadExternalStoragePermission("select a video")){
                     chooseVideo();
-                    
+
                     if(mSelectedImage!=null&&mSelectedVideo!=null){
                         btnPost.setVisibility(View.VISIBLE);
                     }
@@ -88,12 +92,25 @@ public class PostFragment extends Fragment {
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSelectedVideo!=null&&mSelectedImage!=null){
+                if(mSelectedVideo!=null&&mSelectedImage!=null&&"POST".equals(btnPost.getText())){
                     postVideo();
+                }
+                if("BACK".equals(btnPost.getText())){
+                    EventBus.getDefault().post(MainActivity.COME_BACK);
+                    init();
                 }
             }
         });
         return view;
+    }
+
+    private void init(){
+        imageView.setImageBitmap(null);
+        videoView.destroyDrawingCache();
+        btnPost.setBackgroundColor(Color.GRAY);
+        btnPost.setText("POST");
+        mSelectedImage = null;
+        mSelectedVideo = null;
     }
 
 
@@ -134,8 +151,11 @@ public class PostFragment extends Fragment {
 
             if (requestCode == PICK_IMAGE) {
                 mSelectedImage = data.getData();
+                imageView.setImageURI(mSelectedImage);
             } else if (requestCode == PICK_VIDEO) {
                 mSelectedVideo = data.getData();
+                videoView.setVideoURI(mSelectedVideo);
+                videoView.start();
             }
         }
     }
@@ -153,7 +173,8 @@ public class PostFragment extends Fragment {
             public void onResponse(Call<PostVideoResponse> call, Response<PostVideoResponse> response) {
                 PostVideoResponse body = response.body();
                 if(body!=null&&body.isSuccess()){
-                    btnPost.setVisibility(View.GONE);
+                    btnPost.setBackgroundColor(Color.GREEN);
+                    btnPost.setText("BACK");
                 }
             }
 

@@ -6,20 +6,18 @@
     <ImageView
         android:id="@+id/iv_cover"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_height="310dp"/>
 
     <VideoView
         android:id="@+id/vv_video"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_height="310dp"/>
 
     <Button
         android:id="@+id/btn_post"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="post"
-        android:textSize="26sp"
-        android:visibility="gone"/>
+        android:layout_weight="1"
+        android:text="POST"
+        android:textSize="26sp"/>
 </LinearLayout>

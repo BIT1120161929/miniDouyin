@@ -1,10 +1,11 @@
 package com.test.minidouyin.utils;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Uses a combination of a PageTransformer and swapping X & Y coordinates

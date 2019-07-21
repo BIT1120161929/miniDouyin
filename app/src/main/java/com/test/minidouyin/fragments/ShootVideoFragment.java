@@ -11,12 +11,6 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -27,6 +21,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.test.minidouyin.R;
 import com.test.minidouyin.utils.OnDoubleClickListener;
@@ -59,7 +58,6 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     private int CAMERA_TYPE = Camera.CameraInfo.CAMERA_FACING_BACK;
     private boolean isRecording = false;
-    private boolean isCameraOn = false;
     private int rotationDegree = 0;
     private SurfaceHolder mSurfaceHolder;
     private File outputMediaFile;
@@ -91,26 +89,27 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
     @Override
     public void onResume() {
         super.onResume();
-        mCamera = getCamera(CAMERA_TYPE);
-
-        startPreview(mSurfaceHolder);
+            mCamera = getCamera(CAMERA_TYPE);
+            mCamera.startPreview();
     }
-//
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if (isVisibleToUser&&!isCameraOn) {
-//            mCamera = getCamera(CAMERA_TYPE);
-//
-//            startPreview(mSurfaceHolder);
-//        }
-//        if (!(isVisibleToUser) && mCamera != null) {
-//            if(isRecording){
-//                releaseMediaRecorder();
-//            }
-//            releaseCameraAndPreview();
-//        }
-//    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCamera = getCamera(CAMERA_TYPE);
+        mCamera.startPreview();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(hidden){
+            Log.d("Shoot", "onHiddenChanged: nmslnmslnmslnmsl");
+        }
+        else{
+            Log.d("Shoot", "onHiddenChanged: nmslnmslnmslnmslxxxxxx");
+        }
+    }
 
     @Nullable
     @Override
@@ -191,15 +190,15 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             cam.setParameters(parameters);
         }
-        isCameraOn = true;
         return cam;
     }
 
     private void releaseCameraAndPreview() {
-        mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-        isCameraOn = false;
+        if(mCamera!=null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     private void startPreview(SurfaceHolder holder) {
@@ -301,17 +300,18 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        try {
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(mCamera==null){
+            mCamera = getCamera(CAMERA_TYPE);
         }
+        startPreview(holder);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        if(mCamera==null){
+            mCamera = getCamera(CAMERA_TYPE);
+        }
+        startPreview(holder);
     }
 
     @Override
