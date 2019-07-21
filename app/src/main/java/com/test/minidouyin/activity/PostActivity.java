@@ -1,33 +1,27 @@
-package com.test.minidouyin.fragments;
+package com.test.minidouyin.activity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-
-import com.test.minidouyin.MainActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.network.RetrofitManager;
 import com.test.minidouyin.network.beans.PostVideoResponse;
 import com.test.minidouyin.network.service.VideoListService;
-import com.test.minidouyin.utils.OnDoubleClickListener;
+import com.test.minidouyin.utils.GetPathFromUri;
+import com.test.minidouyin.utils.GetUriFromPath;
 import com.test.minidouyin.utils.ResourceUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -39,11 +33,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static android.app.Activity.RESULT_OK;
+import static com.test.minidouyin.utils.SaveBitmaputil.getVideoThumb;
+import static com.test.minidouyin.utils.SaveBitmaputil.saveBitmap;
 
-public class PostFragment extends Fragment {
+/**
+ * 上传Activity，上方为VideoView，下方为ImageView，点击按钮上传
+ * 可以有缺省的图片URI，实现了自动获取第一帧的封面图上传
+ */
+public class PostActivity extends AppCompatActivity {
 
-    private static final int GRANT_PERMISSION = 3;
     private static final int PICK_IMAGE = 1;
     private static final int PICK_VIDEO = 2;
 
@@ -54,24 +52,28 @@ public class PostFragment extends Fragment {
     private Uri mSelectedImage;
     private Uri mSelectedVideo;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_post,container,false);
 
-        videoView = view.findViewById(R.id.vv_video);
-        imageView = view.findViewById(R.id.iv_cover);
-        btnPost = view.findViewById(R.id.btn_post);
-        btnPost.setBackgroundColor(Color.GRAY);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_post);
+
+        videoView = findViewById(R.id.vv_video);
+        imageView = findViewById(R.id.iv_cover);
+        btnPost = findViewById(R.id.btn_post);
+        Uri shootUri = getIntent().getData();
+
+        if (shootUri != null) {
+            mSelectedVideo = shootUri;
+            videoView.setVideoURI(mSelectedVideo);
+            videoView.start();
+        }
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(requestReadExternalStoragePermission("select an image")){
+                if (requestReadExternalStoragePermission("select an image")) {
                     chooseImage();
-                    if(mSelectedImage!=null&&mSelectedVideo!=null){
-                        btnPost.setVisibility(View.VISIBLE);
-                    }
                 }
             }
         });
@@ -79,12 +81,8 @@ public class PostFragment extends Fragment {
         videoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (requestReadExternalStoragePermission("select a video")){
+                if (requestReadExternalStoragePermission("select a video")) {
                     chooseVideo();
-
-                    if(mSelectedImage!=null&&mSelectedVideo!=null){
-                        btnPost.setVisibility(View.VISIBLE);
-                    }
                 }
             }
         });
@@ -92,19 +90,23 @@ public class PostFragment extends Fragment {
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSelectedVideo!=null&&mSelectedImage!=null&&"POST".equals(btnPost.getText())){
+                System.out.println(mSelectedVideo);
+                if (mSelectedVideo != null && "POST".equals(btnPost.getText())) {
                     postVideo();
                 }
-                if("BACK".equals(btnPost.getText())){
-                    EventBus.getDefault().post(MainActivity.COME_BACK);
-                    init();
+                if ("BACK".equals(btnPost.getText())) {
+                    btnPost.setBackgroundColor(Color.GRAY);
+                    btnPost.setText("POST");
+                    Intent intent = new Intent(PostActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
             }
         });
-        return view;
+
     }
 
-    private void init(){
+
+    private void init() {
         imageView.setImageBitmap(null);
         videoView.destroyDrawingCache();
         btnPost.setBackgroundColor(Color.GRAY);
@@ -113,16 +115,14 @@ public class PostFragment extends Fragment {
         mSelectedVideo = null;
     }
 
-
-
     private boolean requestReadExternalStoragePermission(String explanation) {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+        if (ActivityCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PostActivity.this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
             } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{
+                ActivityCompat.requestPermissions(PostActivity.this, new String[]{
                         Manifest.permission.READ_EXTERNAL_STORAGE
-                }, GRANT_PERMISSION);
+                }, MainActivity.REQUEST_PERMISSIONS);
             }
             return false;
         } else {
@@ -130,6 +130,9 @@ public class PostFragment extends Fragment {
         }
     }
 
+    /**
+     * 选择上传的图片
+     */
     public void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -137,6 +140,9 @@ public class PostFragment extends Fragment {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
     }
 
+    /**
+     * 选择上传的视频
+     */
     public void chooseVideo() {
         Intent intent = new Intent();
         intent.setType("video/*");
@@ -160,19 +166,29 @@ public class PostFragment extends Fragment {
         }
     }
 
+    /**
+     * 实现了自动获取封面
+     */
     private void postVideo() {
         Retrofit retrofit = RetrofitManager.get("http://test.androidcamp.bytedance.com/");
 
-        MultipartBody.Part image = getMultipartFromUri("cover_image",mSelectedImage);
-        MultipartBody.Part video = getMultipartFromUri("video",mSelectedVideo);
+        if(mSelectedImage==null){
+            String videoPath = GetPathFromUri.getPath(this,mSelectedVideo);
+            Bitmap bitmap = getVideoThumb(videoPath);
+            String path = saveBitmap(this,bitmap);
 
-        Call<PostVideoResponse> call = retrofit.create(VideoListService.class).postVideo("1120161929","QSJ",image,video);
+            File file = new File(path);
+            mSelectedImage = GetUriFromPath.getImageContentUri(this,file);
+        }
+        MultipartBody.Part video = getMultipartFromUri("video", mSelectedVideo);
+        MultipartBody.Part image = getMultipartFromUri("cover_image", mSelectedImage);
 
+        Call<PostVideoResponse> call = retrofit.create(VideoListService.class).postVideo("1120161929", "QSJ", image, video);
         call.enqueue(new Callback<PostVideoResponse>() {
             @Override
             public void onResponse(Call<PostVideoResponse> call, Response<PostVideoResponse> response) {
                 PostVideoResponse body = response.body();
-                if(body!=null&&body.isSuccess()){
+                if (body != null && body.isSuccess()) {
                     btnPost.setBackgroundColor(Color.GREEN);
                     btnPost.setText("BACK");
                 }
@@ -184,10 +200,18 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * 得到上传的Multipart
+     * @param name
+     * @param uri
+     * @return
+     */
     private MultipartBody.Part getMultipartFromUri(String name, Uri uri) {
         // if NullPointerException thrown, try to allow storage permission in system settings
-        File f = new File(ResourceUtils.getRealPath(getContext(), uri));
+        File f = new File(ResourceUtils.getRealPath(this, uri));
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), f);
         return MultipartBody.Part.createFormData(name, f.getName(), requestFile);
     }
+
+
 }

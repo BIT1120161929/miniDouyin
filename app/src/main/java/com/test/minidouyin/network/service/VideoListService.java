@@ -11,6 +11,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 
+
+/**
+ * Post和Get 方法
+ */
 public interface VideoListService {
     // url: (POST) http://test.androidcamp.bytedance.com/mini_douyin/invoke/video?student_id={student_id}&user_name={user_name}
     // body

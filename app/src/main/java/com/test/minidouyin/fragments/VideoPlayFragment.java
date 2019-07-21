@@ -19,7 +19,7 @@ import com.test.minidouyin.utils.TransportUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import static com.test.minidouyin.MainActivity.PLAY;
+import static com.test.minidouyin.activity.MainActivity.PLAY;
 
 /**
  * 播放界面

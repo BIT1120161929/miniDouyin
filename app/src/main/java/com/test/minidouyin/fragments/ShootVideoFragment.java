@@ -1,10 +1,6 @@
 package com.test.minidouyin.fragments;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -18,15 +14,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.test.minidouyin.activity.PostActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.utils.OnDoubleClickListener;
 
@@ -39,16 +33,9 @@ import static com.test.minidouyin.utils.Utils.MEDIA_TYPE_VIDEO;
 import static com.test.minidouyin.utils.Utils.getOutputMediaFile;
 
 /**
- * 用户信息
+ * 拍摄
  */
 public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callback {
-
-    private static final int REQUEST_PERMISSIONS = 123;
-    private String[] permissionArray = new String[]{
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.RECORD_AUDIO,
-    };
 
     private SurfaceView surfaceView;
     private Button btnRecord;
@@ -61,6 +48,11 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
     private int rotationDegree = 0;
     private SurfaceHolder mSurfaceHolder;
     private File outputMediaFile;
+
+    private Intent videoIntent;
+    private Uri videoUri;
+    private Intent imageIntent;
+    private Uri ImageUri;
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
@@ -75,9 +67,9 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
                 fos.write(data);
                 fos.close();
 
-                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                mediaScanIntent.setData(Uri.fromFile(pictureFile));
-                getActivity().sendBroadcast(mediaScanIntent);
+                imageIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                imageIntent.setData(Uri.fromFile(pictureFile));
+                getActivity().sendBroadcast(imageIntent);
             } catch (IOException e) {
                 Log.d("mPicture", "Error accessing file: " + e.getMessage());
             }
@@ -89,8 +81,8 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
     @Override
     public void onResume() {
         super.onResume();
-            mCamera = getCamera(CAMERA_TYPE);
-            mCamera.startPreview();
+        mCamera = getCamera(CAMERA_TYPE);
+        mCamera.startPreview();
     }
 
     @Override
@@ -100,17 +92,6 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         mCamera.startPreview();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            Log.d("Shoot", "onHiddenChanged: nmslnmslnmslnmsl");
-        }
-        else{
-            Log.d("Shoot", "onHiddenChanged: nmslnmslnmslnmslxxxxxx");
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,14 +99,6 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         surfaceView = view.findViewById(R.id.sv_img);
         btnRecord = view.findViewById(R.id.btn_record);
         btnFacing = view.findViewById(R.id.btn_facing);
-
-        //申请相机权限
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(permissionArray, REQUEST_PERMISSIONS);
-        }
 
         mCamera = getCamera(CAMERA_TYPE);
         surfaceView = view.findViewById(R.id.sv_img);
@@ -139,9 +112,13 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
             public void onDoubleClick() {
                 if (isRecording) {
                     releaseMediaRecorder();
-                    btnRecord.setBackgroundColor(Color.GRAY);
                     isRecording = false;
-                } else {
+                    btnRecord.setBackgroundColor(Color.GREEN);
+                    btnRecord.setText("GOTO_POST");
+                } else if("GOTO_POST".equals(btnRecord.getText())){
+                    btnRecord.setBackgroundColor(Color.GRAY);
+                    btnRecord.setText("RECORD");
+                }else{
                     mCamera.takePicture(null, null, mPicture);
                 }
             }
@@ -150,11 +127,16 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isRecording) {
+                if ("GOTO_POST".equals(btnRecord.getText())) {
+                    gotoPost(videoIntent);
+                    btnRecord.setText("RECORD");
+                    btnRecord.setBackgroundColor(Color.GRAY);
+                } else if (isRecording) {
                     //todo 停止录制
                     releaseMediaRecorder();
                     isRecording = false;
-                    btnRecord.setBackgroundColor(Color.GRAY);
+                    btnRecord.setBackgroundColor(Color.GREEN);
+                    btnRecord.setText("GOTO_POST");
                 } else {
                     //todo 录制
                     prepareVideoRecorder();
@@ -184,7 +166,9 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         }
         Camera cam = Camera.open(position);
 
-        cam.setDisplayOrientation(getCameraDisplayOrientation(CAMERA_TYPE));
+        rotationDegree = getCameraDisplayOrientation(CAMERA_TYPE);
+
+        cam.setDisplayOrientation(rotationDegree);
         if (position == Camera.CameraInfo.CAMERA_FACING_BACK) {
             Camera.Parameters parameters = cam.getParameters();
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
@@ -194,7 +178,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
     }
 
     private void releaseCameraAndPreview() {
-        if(mCamera!=null) {
+        if (mCamera != null) {
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -292,15 +276,15 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         mCamera.lock();
 
         if (outputMediaFile != null) {
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            mediaScanIntent.setData(Uri.fromFile(outputMediaFile));
-            getActivity().sendBroadcast(mediaScanIntent);
+            videoIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            videoIntent.setData(Uri.fromFile(outputMediaFile));
+            getActivity().sendBroadcast(videoIntent);
         }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if(mCamera==null){
+        if (mCamera == null) {
             mCamera = getCamera(CAMERA_TYPE);
         }
         startPreview(holder);
@@ -308,7 +292,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if(mCamera==null){
+        if (mCamera == null) {
             mCamera = getCamera(CAMERA_TYPE);
         }
         startPreview(holder);
@@ -319,5 +303,11 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         mCamera.stopPreview();
         mCamera.release();
         mCamera = null;
+    }
+
+    public void gotoPost(Intent intent) {
+        Intent carryIntent = new Intent(getActivity(), PostActivity.class);
+        carryIntent.setData(intent.getData());
+        startActivity(carryIntent);
     }
 }

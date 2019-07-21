@@ -4,6 +4,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+
+/**
+ * 双击事件
+ */
 public class OnDoubleClickListener implements View.OnTouchListener {
     private final String TAG = this.getClass().getSimpleName();
     private int count = 0;

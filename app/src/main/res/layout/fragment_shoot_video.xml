@@ -26,7 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:background="@color/grey"
-            android:text="record" />
+            android:text="RECORD" />
         <Button
             android:id="@+id/btn_facing"
             android:layout_width="90dp"
@@ -35,7 +35,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@color/grey"
-            android:text="facing" />
+            android:text="FACING" />
 
 
     <!--</LinearLayout>-->
