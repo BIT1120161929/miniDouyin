@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -58,9 +59,9 @@ public class PostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        videoView = findViewById(R.id.vv_video);
-        imageView = findViewById(R.id.iv_cover);
-        btnPost = findViewById(R.id.btn_post);
+        videoView = findViewById(R.id.ac_post_vv_video);
+        imageView = findViewById(R.id.ac_post_iv_cover);
+        btnPost = findViewById(R.id.ac_post_btn_post);
         Uri shootUri = getIntent().getData();
 
         if (shootUri != null) {
@@ -97,8 +98,7 @@ public class PostActivity extends AppCompatActivity {
                 if ("BACK".equals(btnPost.getText())) {
                     btnPost.setBackgroundColor(Color.GRAY);
                     btnPost.setText("POST");
-                    Intent intent = new Intent(PostActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    PostActivity.this.finish();
                 }
             }
         });
