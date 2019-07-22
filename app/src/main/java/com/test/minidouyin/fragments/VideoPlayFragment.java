@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.test.minidouyin.R;
 import com.test.minidouyin.utils.OnDoubleClickListener;
 import com.test.minidouyin.utils.TransportUtils;
@@ -55,6 +56,22 @@ public class VideoPlayFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video_play,container,false);
         videoView = view.findViewById(R.id.vv_play);
+        final LottieAnimationView animationView=view.findViewById(R.id.btn_like);
+        final LottieAnimationView animationView1=view.findViewById(R.id.btn_random);
+        animationView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animationView.playAnimation();
+                animationView.loop(false);
+            }
+        });
+        animationView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animationView1.playAnimation();
+                animationView1.loop(false);
+            }
+        });
 
 
         videoView.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
