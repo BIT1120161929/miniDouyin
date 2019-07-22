@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -27,15 +28,18 @@
             android:layout_marginBottom="20dp"
             android:background="@color/grey"
             android:text="RECORD" />
-        <Button
-            android:id="@+id/btn_facing"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:background="@color/grey"
-            android:text="FACING" />
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/btn_facing"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="false"
+        android:layout_marginTop="2dp"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/location_pin" />
 
 
     <!--</LinearLayout>-->

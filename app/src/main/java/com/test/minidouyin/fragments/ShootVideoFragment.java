@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.test.minidouyin.activity.PostActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.utils.OnDoubleClickListener;
@@ -39,7 +40,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     private SurfaceView surfaceView;
     private Button btnRecord;
-    private Button btnFacing;
+    private LottieAnimationView animationView;
 
     private Camera mCamera;
 
@@ -98,7 +99,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         View view = inflater.inflate(R.layout.fragment_shoot_video, container, false);
         surfaceView = view.findViewById(R.id.sv_img);
         btnRecord = view.findViewById(R.id.btn_record);
-        btnFacing = view.findViewById(R.id.btn_facing);
+        animationView = view.findViewById(R.id.btn_facing);
 
         mCamera = getCamera(CAMERA_TYPE);
         surfaceView = view.findViewById(R.id.sv_img);
@@ -146,9 +147,11 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
             }
         });
 
-        btnFacing.setOnClickListener(new View.OnClickListener() {
+        animationView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animationView.playAnimation();
+                animationView.loop(false);
                 releaseCameraAndPreview();
                 mCamera = CAMERA_TYPE == Camera.CameraInfo.CAMERA_FACING_BACK ? getCamera(Camera.CameraInfo.CAMERA_FACING_FRONT) : getCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
                 mSurfaceHolder.addCallback(ShootVideoFragment.this);
