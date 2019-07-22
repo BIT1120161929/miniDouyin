@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.test.minidouyin.R;
+import com.test.minidouyin.activity.MainActivity;
 import com.test.minidouyin.adapter.RecyclerView4VideoListAdapter;
 import com.test.minidouyin.network.beans.Feed;
 import com.test.minidouyin.network.beans.FeedsResponse;
@@ -21,6 +22,7 @@ import com.test.minidouyin.network.service.VideoListService;
 import com.test.minidouyin.utils.TransportUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,11 +42,23 @@ public class VideoListFragment extends Fragment {
     public VideoListFragment() {
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        System.out.println("CREATTTTTTTTTTTTT");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("ONRESSSSSSSSSSSSSSSSSS");
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video_list,container,false);
-        videoRecyclerView = view.findViewById(R.id.rv_videolist);
+        videoRecyclerView = view.findViewById(R.id.fr_videol_rv_videolist);
         DividerItemDecoration divider = new DividerItemDecoration(container.getContext(),DividerItemDecoration.VERTICAL);
         divider.setDrawable(ContextCompat.getDrawable(container.getContext(),R.drawable.dimension_cool_divider));
         videoRecyclerView.addItemDecoration(divider);

@@ -5,8 +5,8 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_videolist"
+        android:id="@+id/fr_videol_rv_videolist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

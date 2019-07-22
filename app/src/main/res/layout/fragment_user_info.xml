@@ -10,35 +10,33 @@
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ui_ci_icon"
+            android:id="@+id/fr_ui_ci_icon"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_margin="15dp"
             android:src="@drawable/icon"/>
         <TextView
-            android:id="@+id/ui_tv_name"
+            android:id="@+id/fr_ui_tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/ui_ci_icon"
-            android:text="tesssssssst"
+            android:layout_toRightOf="@id/fr_ui_ci_icon"
             android:textSize="24sp"
             android:layout_marginTop="15dp"/>
         <TextView
-            android:id="@+id/ui_tv_id"
+            android:id="@+id/fr_ui_tv_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/ui_ci_icon"
-            android:layout_below="@id/ui_tv_name"
-            android:text="tesssssssst"
+            android:layout_toRightOf="@id/fr_ui_ci_icon"
+            android:layout_below="@id/fr_ui_tv_name"
             android:textSize="24sp"
             android:layout_marginTop="15dp"/>
 
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_creation"
+        android:id="@+id/fr_ui_rv_creation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp"></androidx.recyclerview.widget.RecyclerView>
+        android:layout_margin="15dp"/>
 
 
 

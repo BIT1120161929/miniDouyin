@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -30,9 +31,13 @@ import org.greenrobot.eventbus.Subscribe;
  * 右下方按钮为上传按钮
  */
 public class MainActivity extends AppCompatActivity {
+    
+    private final String TAG = "MainActivity";
 
     private ViewPager2 pager;
     private FloatingActionButton floatingActionButton;
+
+    public static final Integer REFRESH = 110;
 
 
     public static final int REQUEST_PERMISSIONS = 123;
@@ -41,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO,
     };
-
 
     public static final int PLAY = 1;
 
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        floatingActionButton = findViewById(R.id.fb_post);
+        floatingActionButton = findViewById(R.id.ac_main_fb_post);
 
         //申请权限
         if (ContextCompat.checkSelfPermission(this,
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(permissionArray, REQUEST_PERMISSIONS);
         }
 
-        pager = findViewById(R.id.vp_viewpager);
+        pager = findViewById(R.id.ac_main_vp_viewpager);
         pager.setAdapter(new FragmentStateAdapter(getSupportFragmentManager()) {
             @NonNull
             @Override

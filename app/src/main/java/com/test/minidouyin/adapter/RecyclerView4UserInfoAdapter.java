@@ -16,12 +16,12 @@ import com.test.minidouyin.network.beans.Feed;
 
 import java.util.List;
 
-public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder> {
+public class RecyclerView4UserInfoAdapter extends RecyclerView.Adapter<RecyclerView4UserInfoAdapter.UserInfoViewHolder> {
 
     private Context mContext;
     private List<Feed> feedList;
 
-    public UserInfoAdapter(Context mContext,List<Feed> feedList) {
+    public RecyclerView4UserInfoAdapter(Context mContext, List<Feed> feedList) {
         this.mContext = mContext;
         this.feedList = feedList;
     }
@@ -51,9 +51,9 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.UserIn
 
         public UserInfoViewHolder(@NonNull View itemView) {
             super(itemView);
-            item_iv_cover = itemView.findViewById(R.id.item_iv_cover);
-            item_tv_name = itemView.findViewById(R.id.item_tv_name);
-            item_tv_description = itemView.findViewById(R.id.item_tv_description);
+            item_iv_cover = itemView.findViewById(R.id.item_user_iv_cover);
+            item_tv_name = itemView.findViewById(R.id.item_video_tv_name);
+            item_tv_description = itemView.findViewById(R.id.item_user_tv_description);
         }
     }
 }

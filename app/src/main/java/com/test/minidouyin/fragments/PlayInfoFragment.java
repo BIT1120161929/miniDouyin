@@ -23,7 +23,7 @@ public class PlayInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_play_info,null);
-        ViewPager2 pager = view.findViewById(R.id.vp_infoplay);
+        ViewPager2 pager = view.findViewById(R.id.fr_playinfo_vp_infoplay);
         pager.setAdapter(new FragmentStateAdapter(getChildFragmentManager()) {
             @NonNull
             @Override

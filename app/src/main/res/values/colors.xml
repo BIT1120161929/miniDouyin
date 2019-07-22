@@ -5,4 +5,16 @@
     <color name="colorAccent">#D81B60</color>
     <color name="recording">#FF0000</color>
     <color name="grey">#888888</color>
+
+
+    <color name="test_white">#ffffffff</color>
+    <color name="test_black">#ff000000</color>
+
+    <color name = "cyan">#95adbe</color>
+    <color name = "purple">#574f7d</color>
+    <color name = "dark_purple">#4f3a65</color>
+
+    <color name="light_pink">#fff1d4d4</color>
+    <color name="medium_pink">#ffddb6c6</color>
+    <color name="heavy_pink">#ffac8daf</color>
 </resources>

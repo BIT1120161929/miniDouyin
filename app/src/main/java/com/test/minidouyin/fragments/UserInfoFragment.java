@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.test.minidouyin.activity.MainActivity;
 import com.test.minidouyin.R;
-import com.test.minidouyin.adapter.UserInfoAdapter;
+import com.test.minidouyin.adapter.RecyclerView4UserInfoAdapter;
 import com.test.minidouyin.network.beans.Feed;
 import com.test.minidouyin.network.beans.FeedsResponse;
 import com.test.minidouyin.network.service.VideoListService;
@@ -55,10 +55,10 @@ public class UserInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_info,container,false);
-        rvCreation = view.findViewById(R.id.rv_creation);
-        iv_icon = view.findViewById(R.id.ui_ci_icon);
-        tv_name = view.findViewById(R.id.ui_tv_name);
-        tv_id = view.findViewById(R.id.ui_tv_id);
+        rvCreation = view.findViewById(R.id.fr_ui_rv_creation);
+        iv_icon = view.findViewById(R.id.fr_ui_ci_icon);
+        tv_name = view.findViewById(R.id.fr_ui_tv_name);
+        tv_id = view.findViewById(R.id.fr_ui_tv_id);
 
         rvCreation.setLayoutManager(new LinearLayoutManager(container.getContext()));
 
@@ -73,9 +73,9 @@ public class UserInfoFragment extends Fragment {
             public void onResponse(Call<FeedsResponse> call, Response<FeedsResponse> response) {
                 feedList = response.body().getFeeds();
 
-                UserInfoAdapter mAdapter = new UserInfoAdapter(getActivity(),feedList);
+                RecyclerView4UserInfoAdapter mAdapter = new RecyclerView4UserInfoAdapter(getActivity(),feedList);
                 rvCreation.setAdapter(mAdapter);
-                rvCreation.setAdapter(new UserInfoAdapter(getActivity(),feedList));
+                rvCreation.setAdapter(new RecyclerView4UserInfoAdapter(getActivity(),feedList));
             }
 
             @Override
@@ -101,9 +101,9 @@ public class UserInfoFragment extends Fragment {
                     userFeedList.add(feed);
                 }
             }
-            UserInfoAdapter mAdapter = new UserInfoAdapter(getActivity(),userFeedList);
+            RecyclerView4UserInfoAdapter mAdapter = new RecyclerView4UserInfoAdapter(getActivity(),userFeedList);
             rvCreation.setAdapter(mAdapter);
-            rvCreation.setAdapter(new UserInfoAdapter(getActivity(),userFeedList));
+            rvCreation.setAdapter(new RecyclerView4UserInfoAdapter(getActivity(),userFeedList));
         }
     }
 }

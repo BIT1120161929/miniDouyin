@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.test.minidouyin.activity.PostActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.utils.OnDoubleClickListener;
@@ -40,7 +39,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
 
     private SurfaceView surfaceView;
     private Button btnRecord;
-    private LottieAnimationView animationView;
+    private Button btnFacing;
 
     private Camera mCamera;
 
@@ -97,12 +96,12 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shoot_video, container, false);
-        surfaceView = view.findViewById(R.id.sv_img);
-        btnRecord = view.findViewById(R.id.btn_record);
-        animationView = view.findViewById(R.id.btn_facing);
+        surfaceView = view.findViewById(R.id.fr_shoot_sv_img);
+        btnRecord = view.findViewById(R.id.fr_shoot_btn_record);
+        btnFacing = view.findViewById(R.id.fr_shoot_btn_facing);
 
         mCamera = getCamera(CAMERA_TYPE);
-        surfaceView = view.findViewById(R.id.sv_img);
+        surfaceView = view.findViewById(R.id.fr_shoot_sv_img);
 
         mSurfaceHolder = surfaceView.getHolder();
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -147,11 +146,9 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
             }
         });
 
-        animationView.setOnClickListener(new View.OnClickListener() {
+        btnFacing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animationView.playAnimation();
-                animationView.loop(false);
                 releaseCameraAndPreview();
                 mCamera = CAMERA_TYPE == Camera.CameraInfo.CAMERA_FACING_BACK ? getCamera(Camera.CameraInfo.CAMERA_FACING_FRONT) : getCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
                 mSurfaceHolder.addCallback(ShootVideoFragment.this);
@@ -312,5 +309,7 @@ public class ShootVideoFragment extends Fragment implements SurfaceHolder.Callba
         Intent carryIntent = new Intent(getActivity(), PostActivity.class);
         carryIntent.setData(intent.getData());
         startActivity(carryIntent);
+        intent = null;
+        carryIntent = null;
     }
 }

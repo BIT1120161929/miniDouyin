@@ -1,10 +1,13 @@
 package com.test.minidouyin.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,6 +35,7 @@ public class RecyclerView4VideoListAdapter extends RecyclerView.Adapter<Recycler
         return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_video,viewGroup,false));
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Glide.with(mContext).load(feedList.get(i).getImageUrl()).into(viewHolder.im_icon);
@@ -53,9 +57,9 @@ public class RecyclerView4VideoListAdapter extends RecyclerView.Adapter<Recycler
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            im_icon = itemView.findViewById(R.id.iv_icon);
-            tv_name= itemView.findViewById(R.id.tv_name);
-            tv_studentId = itemView.findViewById(R.id.tv_studentid);
+            im_icon = itemView.findViewById(R.id.item_video_iv_icon);
+            tv_name= itemView.findViewById(R.id.item_video_tv_name);
+            tv_studentId = itemView.findViewById(R.id.item_video_tv_studentid);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
