@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.test.minidouyin.view.DragRecyclerView;
 import com.test.minidouyin.activity.MainActivity;
 import com.test.minidouyin.R;
 import com.test.minidouyin.adapter.RecyclerView4UserInfoAdapter;
@@ -37,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 用户信息
  */
 public class UserInfoFragment extends Fragment {
-    private RecyclerView rvCreation;
+    private DragRecyclerView rvCreation;
     private CircleImageView iv_icon;
     private TextView tv_name;
     private TextView tv_id;
@@ -106,4 +106,5 @@ public class UserInfoFragment extends Fragment {
             rvCreation.setAdapter(new RecyclerView4UserInfoAdapter(getActivity(),userFeedList));
         }
     }
+
 }
