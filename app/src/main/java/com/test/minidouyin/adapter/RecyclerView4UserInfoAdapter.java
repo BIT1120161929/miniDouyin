@@ -54,6 +54,37 @@ public class RecyclerView4UserInfoAdapter extends RecyclerView.Adapter<RecyclerV
             item_iv_cover = itemView.findViewById(R.id.item_user_iv_cover);
             item_tv_name = itemView.findViewById(R.id.item_video_tv_name);
             item_tv_description = itemView.findViewById(R.id.item_user_tv_description);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(onItemClickListener!=null){
+                        onItemClickListener.OnItemClick(v,
+                                feedList.get(getPosition()).getVideoURL(),
+                                feedList.get(getPosition()).getUserName(),
+                                feedList.get(getPosition()).getStudentId());
+                    }
+                }
+            });
         }
+    }
+
+
+    /**
+     * 点击RecyclerView某条的监听
+     */
+    public interface OnItemClickListener{
+        /**
+         * 当RecyclerView某条被点击时回调
+         * @param view 点击item的视图
+         * @param videoUrl 点击得到的数据
+         */
+        public void OnItemClick(View view,String videoUrl,String name,String id);
+    }
+
+    private RecyclerView4UserInfoAdapter.OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(RecyclerView4UserInfoAdapter.OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
     }
 }

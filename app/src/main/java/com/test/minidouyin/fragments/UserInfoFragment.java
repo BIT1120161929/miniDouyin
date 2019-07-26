@@ -51,6 +51,12 @@ public class UserInfoFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -75,7 +81,13 @@ public class UserInfoFragment extends Fragment {
 
                 RecyclerView4UserInfoAdapter mAdapter = new RecyclerView4UserInfoAdapter(getActivity(),feedList);
                 rvCreation.setAdapter(mAdapter);
-                rvCreation.setAdapter(new RecyclerView4UserInfoAdapter(getActivity(),feedList));
+
+                mAdapter.setOnItemClickListener(new RecyclerView4UserInfoAdapter.OnItemClickListener() {
+                    @Override
+                    public void OnItemClick(View view, String videoUrl, String name, String id) {
+                        EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
+                    }
+                });
             }
 
             @Override

@@ -1,6 +1,7 @@
 package com.test.minidouyin.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,13 +46,11 @@ public class VideoListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("CREATTTTTTTTTTTTT");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        System.out.println("ONRESSSSSSSSSSSSSSSSSS");
     }
 
     @Nullable
@@ -88,8 +87,15 @@ public class VideoListFragment extends Fragment {
 
                 mAdapter.setOnItemClickListener(new RecyclerView4VideoListAdapter.OnItemClickListener() {
                     @Override
-                    public void OnItemClick(View view, String videoUrl, String name, String id) {
-                        EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
+                    public void OnItemClick(View view, final String videoUrl, final String name, final String id) {
+                        new Handler().postDelayed(new Runnable(){
+
+                            @Override
+                            public void run() {
+                                EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
+                            }
+                        },800);
+
                     }
                 });
             }
