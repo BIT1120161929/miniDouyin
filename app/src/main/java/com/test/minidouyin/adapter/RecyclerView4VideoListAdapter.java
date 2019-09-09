@@ -1,6 +1,7 @@
 package com.test.minidouyin.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.test.minidouyin.R;
+import com.test.minidouyin.UserInfoInteresterActivity;
 import com.test.minidouyin.network.beans.Feed;
 
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerView4VideoListAdapter extends RecyclerView.Adapter {
 
@@ -90,15 +90,11 @@ public class RecyclerView4VideoListAdapter extends RecyclerView.Adapter {
 
     public class ViewHolder4User extends RecyclerView.ViewHolder{
 
-        CircleImageView icon1;
-        CircleImageView icon2;
-        CircleImageView icon3;
-
         public ViewHolder4User(@NonNull View itemView) {
             super(itemView);
-            icon1 = itemView.findViewById(R.id.item_civ_icon1);
-            icon2 = itemView.findViewById(R.id.item_civ_icon2);
-            icon3 = itemView.findViewById(R.id.item_civ_icon3);
+            bindActivity(itemView,R.id.item_civ_icon1,UserInfoInteresterActivity.class);
+            bindActivity(itemView,R.id.item_civ_icon2,UserInfoInteresterActivity.class);
+            bindActivity(itemView,R.id.item_civ_icon3,UserInfoInteresterActivity.class);
         }
     }
 
@@ -118,5 +114,14 @@ public class RecyclerView4VideoListAdapter extends RecyclerView.Adapter {
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
+    }
+
+    private void bindActivity(final View itemView, final int btnId, final Class<?> activityClass){
+        itemView.findViewById(btnId).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemView.getContext().startActivity(new Intent(itemView.getContext(), activityClass));
+            }
+        });
     }
 }

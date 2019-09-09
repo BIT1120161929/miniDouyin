@@ -1,7 +1,9 @@
 package com.test.minidouyin.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +27,13 @@ import com.test.minidouyin.utils.TransportUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * 播放列表
  */
 public class VideoListFragment extends Fragment {
+    private static final String TAG = "VideoListFragment";
     private RecyclerView videoRecyclerView;
 
     public VideoListFragment() {
@@ -46,11 +54,31 @@ public class VideoListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: ");
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
     }
 
     @Nullable
@@ -74,30 +102,44 @@ public class VideoListFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        //生成接口对象并且返回Call对象，并没有真正执行call方法
         Call<FeedsResponse> call = retrofit.create(VideoListService.class).feedRequest();
+        //发送请求，同步调用execute方法，异步调用enqueue方法
         call.enqueue(new Callback<FeedsResponse>() {
             @Override
             public void onResponse(Call<FeedsResponse> call, Response<FeedsResponse> response) {
 
-                List<Feed> feedList = response.body().getFeeds();
-                Collections.shuffle(feedList);
-                RecyclerView4VideoListAdapter mAdapter = new RecyclerView4VideoListAdapter(getActivity(),feedList);
+                if(response.body()!=null){
+                    List<Feed> feedList = response.body().getFeeds();
+                    Collections.shuffle(feedList);
+                    RecyclerView4VideoListAdapter mAdapter = new RecyclerView4VideoListAdapter(getActivity(),feedList);
+                    videoRecyclerView.setAdapter(mAdapter);
 
-                videoRecyclerView.setAdapter(mAdapter);
+                    mAdapter.setOnItemClickListener(new RecyclerView4VideoListAdapter.OnItemClickListener() {
+                        @Override
+                        public void OnItemClick(View view, final String videoUrl, final String name, final String id) {
+                            new Handler().postDelayed(new Runnable(){
 
-                mAdapter.setOnItemClickListener(new RecyclerView4VideoListAdapter.OnItemClickListener() {
-                    @Override
-                    public void OnItemClick(View view, final String videoUrl, final String name, final String id) {
-                        new Handler().postDelayed(new Runnable(){
+                                @Override
+                                public void run() {
+                                    EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
+                                    //忽略层级
+//                                    EventBus testBus = EventBus.builder().eventInheritance(false).build();
+//                                    testBus.post(new TransportUtils(videoUrl,name,id));
 
-                            @Override
-                            public void run() {
-                                EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
-                            }
-                        },800);
+                                    //为EventBus提供线程池来进行后台任务
+//                                    EventBus.builder().executorService(Executors.newFixedThreadPool(10));
+//                                    EventBus.builder().executorService(new ThreadPoolExecutor(10,10,0, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()));
 
-                    }
-                });
+                                    //在没有订阅者的时候保持静默
+//                                    EventBus eventBus = EventBus.builder().logNoSubscriberMessages(false).sendNoSubscriberEvent(false).build();
+//                                    eventBus.postSticky(new TransportUtils(videoUrl,name,videoUrl));
+                                }
+                            },800);
+
+                        }
+                    });
+                }
             }
 
             @Override

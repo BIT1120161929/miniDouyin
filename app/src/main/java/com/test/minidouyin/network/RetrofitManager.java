@@ -1,5 +1,8 @@
 package com.test.minidouyin.network;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 

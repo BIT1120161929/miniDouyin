@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
@@ -26,6 +28,8 @@ import com.test.minidouyin.utils.TransportUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * 可以左右滑动的三格ViewPager2，从0号到2号分别为播放和个人信息的组合窗口，播放列表，拍摄和录制窗口
  * 右下方按钮为上传按钮
@@ -34,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
     
     private final String TAG = "MainActivity";
 
+
     private ViewPager2 pager;
     private FloatingActionButton floatingActionButton;
 
     public static final Integer REFRESH = 110;
-
 
     public static final int REQUEST_PERMISSIONS = 123;
     public String[] permissionArray = new String[]{
@@ -49,12 +53,25 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int PLAY = 1;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "onRestart: ");
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState){
         EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         floatingActionButton = findViewById(R.id.ac_main_fb_post);
 
@@ -92,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     @Override

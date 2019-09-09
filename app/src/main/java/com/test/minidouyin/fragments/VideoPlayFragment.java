@@ -3,6 +3,7 @@ package com.test.minidouyin.fragments;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.test.minidouyin.utils.TransportUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import static com.test.minidouyin.activity.MainActivity.PLAY;
 
@@ -40,6 +42,7 @@ public class VideoPlayFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        //在onCreate中注册EventBus
         EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
     }
@@ -47,9 +50,12 @@ public class VideoPlayFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        videoView.pause();
+        videoView = null;
+        //在onDestroy中注销EventBus
         EventBus.getDefault().unregister(this);
     }
-
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -75,6 +81,15 @@ public class VideoPlayFragment extends Fragment {
         return view;
     }
 
+    /**
+     * EventBus3已经可以不使用onEvent开头命名，但是要使用@Subscribe并且指定线程模型，如@Subscribe(threadMode = ThreadMode.MAIN)。
+     * 默认为POSTING，也就是与post方法同一线程
+     * MAIN是运行在UIThread中，所以要注意不要阻塞UI线程
+     * MAIN_OEDERED按照post顺序执行
+     * BACKGROUND启动后台线程完成任务，如果post方法不是在主线程执行的，那直接在那个线程执行。如果是UIThreadpost的，那就会使用一个后台线程执行
+     * ASYNC启动异步线程完成任务
+     * @param transportUtils
+     */
     @Subscribe
     public void onEventMainThread(TransportUtils transportUtils){
         if(transportUtils.PALY == PLAY){

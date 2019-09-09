@@ -77,17 +77,19 @@ public class UserInfoFragment extends Fragment {
         call.enqueue(new Callback<FeedsResponse>() {
             @Override
             public void onResponse(Call<FeedsResponse> call, Response<FeedsResponse> response) {
-                feedList = response.body().getFeeds();
+                if(response.body()!=null){
+                    feedList = response.body().getFeeds();
 
-                RecyclerView4UserInfoAdapter mAdapter = new RecyclerView4UserInfoAdapter(getActivity(),feedList);
-                rvCreation.setAdapter(mAdapter);
+                    RecyclerView4UserInfoAdapter mAdapter = new RecyclerView4UserInfoAdapter(getActivity(),feedList);
+                    rvCreation.setAdapter(mAdapter);
 
-                mAdapter.setOnItemClickListener(new RecyclerView4UserInfoAdapter.OnItemClickListener() {
-                    @Override
-                    public void OnItemClick(View view, String videoUrl, String name, String id) {
-                        EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
-                    }
-                });
+                    mAdapter.setOnItemClickListener(new RecyclerView4UserInfoAdapter.OnItemClickListener() {
+                        @Override
+                        public void OnItemClick(View view, String videoUrl, String name, String id) {
+                            EventBus.getDefault().post(new TransportUtils(videoUrl,name,id));
+                        }
+                    });
+                }
             }
 
             @Override
